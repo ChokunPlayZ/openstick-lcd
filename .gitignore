@@ -1,0 +1,15 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+.venv/
+.local/
+.edl.lock
+backups/
+calibration/
+runs/
+downloads/
+tools/
+node_modules/
+test-results/
+playwright-report/
+*.tsbuildinfo

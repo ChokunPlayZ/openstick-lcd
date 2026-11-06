@@ -1,0 +1,77 @@
+/include/ "mf800h.dts"
+
+/* GC9107 wiring and supply voltages recovered from THIS unit's stock DTB. */
+/ {
+	model = "MF800H MIFID OpenStick (GC9107 LCD)";
+
+	battery {
+		voltage-max-design-microvolt = <4350000>;
+		energy-full-design-microwatt-hours = <7980000>;
+		charge-full-design-microamp-hours = <2100000>;
+	};
+
+	lcd-backlight {
+		compatible = "gpio-leds";
+		pinctrl-names = "default";
+		pinctrl-0 = <&lcd_backlight_state>;
+
+		backlight {
+			label = "mf800h:lcd";
+			gpios = <&{/soc@0/spmi@200f000/pmic@0/mpps@a000} 4 0>;
+			default-state = "on";
+		};
+	};
+};
+
+&{/soc@0/pinctrl@1000000} {
+	lcd_ctrl_state: lcd-control-state {
+		pins = "gpio11", "gpio30";
+		function = "gpio";
+		drive-strength = <8>;
+		bias-disable;
+	};
+};
+
+&{/soc@0/spmi@200f000/pmic@0/mpps@a000} {
+	lcd_backlight_state: lcd-backlight-state {
+		pins = "mpp4";
+		function = "sink";
+		drive-strength = <10>;
+		qcom,dtest = <0>;
+		output-low;
+	};
+};
+
+&{/soc@0/spi@78b9000} {
+	status = "okay";
+	cs-gpios = <&{/soc@0/pinctrl@1000000} 18 1>;
+	num-cs = <1>;
+
+	display@0 {
+		compatible = "himi,mf800h-gc9107", "panel-mipi-dbi-spi";
+		reg = <0>;
+		spi-max-frequency = <16000000>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&lcd_ctrl_state>;
+		reset-gpios = <&{/soc@0/pinctrl@1000000} 11 0>;
+		dc-gpios = <&{/soc@0/pinctrl@1000000} 30 0>;
+		power-supply = <&{/remoteproc/smd-edge/rpm-requests/regulators/l17}>;
+		io-supply = <&{/remoteproc/smd-edge/rpm-requests/regulators/l6}>;
+		write-only;
+		format = "r5g6b5";
+		width-mm = <26>;
+		height-mm = <26>;
+
+		panel-timing {
+			clock-frequency = <0>;
+			hactive = <128>;
+			vactive = <128>;
+			hfront-porch = <0>;
+			hback-porch = <0>;
+			hsync-len = <0>;
+			vfront-porch = <0>;
+			vback-porch = <0>;
+			vsync-len = <0>;
+		};
+	};
+};

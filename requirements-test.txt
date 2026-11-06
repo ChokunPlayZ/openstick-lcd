@@ -1,0 +1,4 @@
+# Host-side renderer, preview and real QR-decoder tests. No device flashing tools.
+Pillow>=9.4
+qrcode>=7.4
+zxing-cpp>=2.2

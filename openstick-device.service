@@ -1,0 +1,28 @@
+[Unit]
+Description=OpenStick independent screen and button daemon (MF800H)
+Documentation=file:/usr/local/share/openstick-device/README.md
+After=systemd-udev-trigger.service systemd-logind.service
+Wants=systemd-logind.service
+Conflicts=mf800h-display.service
+
+[Service]
+Type=simple
+ExecStartPre=/sbin/modprobe panel-mipi-dbi
+ExecStart=/usr/bin/systemd-inhibit --what=handle-power-key --who=openstick-device --why=Side-button-macros --mode=block /usr/bin/python3 /usr/local/lib/openstick-device/openstick_device.py
+User=root
+Group=root
+RuntimeDirectory=openstick-device
+RuntimeDirectoryMode=0700
+UMask=0077
+Restart=on-failure
+RestartSec=2
+TimeoutStopSec=5
+KillMode=control-group
+NoNewPrivileges=yes
+ProtectHome=yes
+ProtectSystem=strict
+ReadWritePaths=/etc/openstick-device /run/openstick-device
+ReadWritePaths=-/sys/class/leds/mf800h:lcd -/sys/devices/virtual/vtconsole -/dev/fb0 -/dev/fb1
+
+[Install]
+WantedBy=multi-user.target

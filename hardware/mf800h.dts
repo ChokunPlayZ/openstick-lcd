@@ -1,0 +1,51 @@
+/include/ "upstream-mf800.dts"
+
+/* Conservative first-boot profile derived from this unit's stock MTP DTB.
+ * Do not enable the unrelated MF800 LED wiring or 4.35 V charge profile.
+ * The GC9107 screen and Linux-controlled charging are intentionally deferred.
+ */
+/ {
+	model = "MF800H MIFID (experimental OpenStick)";
+	compatible = "himi,mf800h", "qcom,msm8916";
+
+	battery {
+		voltage-min-design-microvolt = <3350000>;
+		voltage-max-design-microvolt = <4200000>;
+		energy-full-design-microwatt-hours = <7955000>;
+		charge-full-design-microamp-hours = <2150000>;
+		ocv-capacity-table-0 = <4150000 100>, <4125000 95>, <4090000 90>, <4065000 85>, <4022000 80>, <3989000 75>, <3949000 70>, <3902000 65>, <3877000 60>, <3837000 55>, <3810000 50>, <3789000 45>, <3776000 40>, <3755000 35>, <3735000 30>, <3715000 25>, <3680000 20>, <3620000 16>, <3583000 13>, <3563000 11>, <3553000 10>, <3533000 9>, <3520000 8>, <3490000 7>, <3460000 6>, <3440000 5>, <3410000 4>, <3390000 3>, <3370000 2>, <3360000 1>, <3350000 0>;
+	};
+
+	leds { status = "disabled"; };
+	gpio-keys { status = "disabled"; };
+	usb-otg-hack { status = "disabled"; };
+};
+
+&{/soc@0/spmi@200f000/pmic@0/charger@1000} {
+	status = "disabled";
+	qcom,fast-charge-safe-current = <450000>;
+	qcom,fast-charge-safe-voltage = <4200000>;
+};
+
+&{/soc@0/spmi@200f000/pmic@0/usb-detect@1300} {
+	status = "okay";
+	phandle = <0xa0>;
+};
+
+&{/soc@0/spmi@200f000/pmic@0/battery@4000} {
+	status = "okay";
+	/delete-property/ power-supplies;
+};
+
+&{/soc@0/spmi@200f000/pmic@1/pwm} {
+	status = "disabled";
+};
+
+&{/soc@0/usb@78d9000} {
+	dr_mode = "peripheral";
+	extcon = <0xa0>;
+};
+
+&{/soc@0/usb@78d9000/ulpi/phy} {
+	extcon = <0xa0>;
+};
